@@ -1,0 +1,33 @@
+html, body {
+  margin: 0px;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+fieldset {
+  padding: 10px;
+}
+
+#all {
+  width: 900px;
+  margin: 20px auto;
+}
+
+form table th {
+  text-align: right;
+}
+
+.appPane {
+  background: #FFD700;
+  padding: 10px;
+}
+
+.appIconContainer {
+  margin: 0 10px 10px 0;
+  width: 300px;
+}
+
+.appIcon {
+  height: 300px;
+  width: 300px;
+}
+
