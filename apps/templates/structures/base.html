@@ -1,0 +1,21 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>
+    {% block pageTitle %}
+      Test Your Entrepreneurial Gut!
+    {% endblock pageTitle %}
+  </title>
+
+  <link rel="stylesheet" type="text/css" href="/css/stylesheet.css" />
+  <script src="/javascript/jquery-1.7.1.min.js"></script>
+
+  {% block head %}{% endblock head %}
+</head>
+<body>
+<div id="all">
+  {% block content %}{% endblock content %}
+</div>
+</body>
+</html>
+

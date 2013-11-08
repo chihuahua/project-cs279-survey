@@ -1,0 +1,36 @@
+{% extends 'structures/base.html' %}
+
+{% block content  %}
+<h1>Test Your Entrepreneurial Gut!</h1>
+
+<form action="{{ request.get_full_path }}" method="post">
+  <input type="hidden" name="purpose" value="appEval">
+  <input type="hidden" name="appIndex" value="{{ app.id }}">
+  <h2>App Name: {{ app.name }}</h2>
+
+  <p>
+    Click <a href="{% url survey.views.doQuiz %}?avoid={{ app.id }}">here</a> if you have heard of it.
+  </p>
+
+<fieldset>
+  <div class="appPane">
+    <div class="appIconContainer">
+      <img class="appIcon" src="{{ app.iconUrl }}">
+    </div>
+    <div class="appDescription">
+      <h3>Description</h3>
+      {{ app.description|safe }}
+    </div>
+  </div>
+
+</fieldset>
+
+  {{ form.as_p }}
+
+  {% csrf_token %}
+
+  <input type="submit" value="Submit">
+</form>
+
+{% endblock content %}
+

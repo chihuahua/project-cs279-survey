@@ -1,0 +1,22 @@
+{% extends 'structures/base.html' %}
+
+{% block content  %}
+<h1>Test Your Entrepreneurial Gut!</h1>
+<p>
+  In doing this survey, you agree to the <a href="{% url survey.views.index %}">statement of informed consent</a>.
+</p>
+<form action="{% url survey.views.personData %}" method="post">
+{% csrf_token %}
+<fieldset>
+{% if errors %}
+  <p>{{ errors }}</p>
+{% endif %}
+  <table>
+    {{ form.as_table }}
+  </table>
+  <input type="submit" value="Next">
+</fieldset>
+</form>
+
+{% endblock content %}
+
