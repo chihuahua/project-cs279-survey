@@ -21,7 +21,7 @@ class DownloadCategory(models.Model):
   Category of number of downloads.
   '''
 
-  strRange = models.CharField(max_length=64)
+  strRange = models.CharField(max_length=64, unique=True)
 
   def __unicode__(self):
     return self.strRange
@@ -45,24 +45,44 @@ class AppEntry(models.Model):
   '''
   Data on a subject's analysis of an app. 
   '''
-  nameClear = models.IntegerField('Does the app\'s name clearly indicate what the app does?', choices=appData.LIKERT_SCALE)
-  nameExciting = models.IntegerField('Is the app\'s name exciting?', choices=appData.LIKERT_SCALE)
-  iconFun = models.IntegerField('Does the icon look fun?', choices=appData.LIKERT_SCALE)
-  iconTrust = models.IntegerField('Based on the icon, do you trust this app?', choices=appData.LIKERT_SCALE)
-  iconEnticing = models.IntegerField('Is the icon enticing?',  choices=appData.LIKERT_SCALE)
-  description = models.IntegerField('Based on the description, would you trust this app?', choices=appData.LIKERT_SCALE)
-  trustApp = models.IntegerField('Do you trust this app?', choices=appData.LIKERT_SCALE)
-  
+  otherApp = models.ForeignKey(App, related_name='lostEntries')
+  chosenApp = models.ForeignKey(App, related_name='wonEntries')
+  explanation = models.TextField('Briefly justify your choice.')
+
   def __unicode__(self):
-    return 'analysis of an app'
+    return self.chosenApp.name + ' was chosen.' 
 
 class AppEntryRecord(models.Model):
-  app = models.ForeignKey(App)
-  entry = models.ForeignKey(AppEntry)
+  entry = models.ForeignKey(AppEntry, unique=True)
   person = models.ForeignKey(PersonEntry)
   timeMade = models.DateTimeField(auto_now_add=True)
 
   def __unicode__(self):
-    return 'record for app entry ' + str(entry.id) 
+    return 'record for app entry ' + str(self.entry.id) 
 
+
+class AppPair(models.Model):
+  app1 = models.ForeignKey(App, related_name='appPair1Entries')
+  app2 = models.ForeignKey(App, related_name='appPair2Entries')
+
+  def __unicode__(self):
+    return self.app1.name + ' compared with ' + self.app2.name
+
+class Constant(models.Model):
+  name = models.CharField(max_length=32, unique=True)
+  value = models.IntegerField()
+
+  def __unicode__(self):
+    return self.name + ': ' + str(self.value)
+
+class ScoreRecord(models.Model):
+  person = models.ForeignKey(PersonEntry, related_name='scoreRecord', unique=True)
+  correct = models.IntegerField()
+  total = models.IntegerField()
+  hash = models.CharField(max_length=64)
+  timeMade = models.DateTimeField(auto_now_add=True)
+  
+
+  def __unicode__(self):
+    return 'Score of ' + str(self.correct) + ' / ' + str(self.total) + ' recorded.'
 

@@ -2,20 +2,21 @@
 
 {% block content  %}
 <h1>Test Your Entrepreneurial Gut!</h1>
-<p>
-  In doing this survey, you agree to the <a href="{% url survey.views.index %}">statement of informed consent</a>.
-</p>
+
 <form action="{% url survey.views.personData %}" method="post">
+<div class="panel panel-default">
+<div class="panel-body">
+
 {% csrf_token %}
-<fieldset>
 {% if errors %}
   <p>{{ errors }}</p>
 {% endif %}
-  <table>
+  <table class="table">
     {{ form.as_table }}
   </table>
-  <input type="submit" value="Next">
-</fieldset>
+</div>
+</div>
+  <input class="btn btn-default" type="submit" value="Next">
 </form>
 
 {% endblock content %}

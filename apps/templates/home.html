@@ -1,17 +1,23 @@
 {% extends 'structures/base.html' %}
 
 {% block content  %}
-<h1>Test Your Entrepreneurial Gut!</h1>
+<h1>How Good Is Your Entrepreneurial Gut?</h1>
+
+<div class="panel panel-default">
+<div class="panel-body">
 
 <p>
-  Not everyone can see entrepreneurial opportunity as well as the likes of Steve Jobs and Mark Zuckerberg. Can you? How's your entrepreneurial gut?
+  Do you have a knack for business? Are you often able to predict the success or demise of new products?
 </p>
 
 <p>
-  To find out, take our quiz, in which you rate Android apps. You'll be given how successful the apps are at the end.
+  Put your abilities to the test! Take our quiz and find out whether you can tell how successful an app is just based on its name and icon.
 </p>
 
-{% include 'structures/informedConsent.html' %}
+</div>
+</div>
+
+<a type="button" class="btn btn-default" href="{% url survey.views.informedConsent %}">Take the Quiz</a>
 
 {% endblock content %}
 

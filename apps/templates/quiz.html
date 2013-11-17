@@ -1,35 +1,175 @@
 {% extends 'structures/base.html' %}
 
+{% block head %}
+
+<script>
+
+var timeLeftContainer;
+var timeLeft;
+
+function updateTimeContainer() {
+  timeLeftContainer.html(timeLeft);
+}
+
+function beginRound() {
+  timeLeftContainer = $('#timeLeft');
+  timeLeft = 15;
+
+  updateTimeContainer();
+  var updateTimer = setInterval(function() {
+    --timeLeft;
+    updateTimeContainer();
+    if (timeLeft == 0) {
+      clearInterval(updateTimer);
+      $('.appPane').css('visibility', 'hidden');
+      window.location.replace('{% url survey.views.doQuiz %}?gen=1');
+    }
+  }, 1000);
+
+  $('.appPane').click(function() {
+    // user has made a selection.
+    clearInterval(updateTimer);
+    $('#choseAppSection').hide();
+
+    var chosenApp;
+    var chosenAppName;
+    var otherApp;
+    if ($(this).attr('id') == 'app1Pane') {
+      chosenApp = {{ apps.app1.id }};
+      chosenAppName = "{{ apps.app1.name }}";
+      otherApp = {{ apps.app2.id }};
+    } else {
+      chosenApp = {{ apps.app2.id }};
+      chosenAppName = "{{ apps.app2.name }}";
+      otherApp = {{ apps.app1.id }};
+    }
+
+    $('#explanationForm [name=chosenApp]').val(chosenApp);
+    $('#explanationForm [name=otherApp]').val(otherApp);
+    var submitButton = $('#explanationForm [type=submit]');
+    submitButton.prop("disabled", true);
+    $('#chosenAppName').html(chosenAppName);
+
+    $('#explanationForm [name=explanation]').keydown(function() {
+      var explanation = $.trim($(this).val());
+      if (explanation.length < 5) {
+        submitButton.prop("disabled", true);
+      } else {
+        submitButton.prop("disabled", false);
+      }
+    });
+
+    $('#explanationForm').show();
+  });
+}
+
+$(function() {
+  {% if results %}
+    $('#choseAppSection').hide();
+    $('#proceedButton').click(function() {
+      $('#resultsSection').hide();
+      $('#choseAppSection').show();
+      beginRound();
+    });
+  {% else %}
+    beginRound();
+  {% endif %}
+});
+
+</script>
+
+{% endblock head %}
+
 {% block content  %}
 <h1>Test Your Entrepreneurial Gut!</h1>
 
-<form action="{{ request.get_full_path }}" method="post">
-  <input type="hidden" name="purpose" value="appEval">
-  <input type="hidden" name="appIndex" value="{{ app.id }}">
-  <h2>App Name: {{ app.name }}</h2>
-
+{% if results %}
+<div id="resultsSection">
+<div class="panel panel-default">
+<div class="panel-body">
   <p>
-    Click <a href="{% url survey.views.doQuiz %}?avoid={{ app.id }}">here</a> if you have heard of it.
+  {% if results.2 == 0 %}
+    The last round didn't count since both apps tied.
+  {% else %}
+
+    {% if results.2 == 1 %}
+    <span class='responseToAnswer'>You're right!</span> {{ results.0.name }} is downloaded more often than {{ results.1.name }}.
+    {% else %}
+    <span class='responseToAnswer'>Incorrect!</span> {{ results.1.name }} is downloaded more often than {{ results.0.name }}.
+    {% endif %}
+  {% endif %}
   </p>
 
-<fieldset>
-  <div class="appPane">
-    <div class="appIconContainer">
-      <img class="appIcon" src="{{ app.iconUrl }}">
-    </div>
-    <div class="appDescription">
-      <h3>Description</h3>
-      {{ app.description|safe }}
-    </div>
+  <p>
+  Your current score is {{ score.correct }} / {{ score.total }}.
+  {% if score.total < 10 %}
+    After 10 rounds, we'll find out how good of an eye for app success you have.
+    <button class="btn btn-default" id="proceedButton">Proceed</button>
+  {% else %}
+    {% if score.percent > 70 %}
+      {{ score.percent|floatformat:"0" }}% is great! You should consider making a popular app and becoming famous. 
+    {% else %}
+      {% if score.percent > 40%}
+        {{ score.percent|floatformat:"0" }}% is good! You have a better eye than most people.
+      {% else %}
+        {{ score.percent|floatformat:"0" }}% % is pretty bad. Come on, you can do better. Try again!
+      {% endif %}
+   {% endif %}
+   <p>
+     <p>Think you can do better?</p>
+<p>
+<button class="btn btn-default" id="proceedButton">Test me again!</button>
+</p>
+<p>
+  If this is the best you can do, share your score with friends! 
+</p>
+     <a href="{% url survey.views.viewScore score.record.hash %}">http://apps.279.chizeng.com{% url survey.views.viewScore score.record.hash %}</a>
+   </p>
+  {% endif %}
+  </p>
+
+</div>
+</div>
+</div>
+{% endif %}
+
+<div id="choseAppSection">
+<p>
+  Click on the app that you think has more downloads. You have <span id="timeLeft"></span> seconds left.
+</p>
+
+<p>
+  Have you seen either app before? Click <a href="{% url survey.views.doQuiz %}?gen=1">here</a> if so!
+</p>
+
+<div id="appsPane">
+  <div id="app1Pane" class="appPane">
+    <h3>{{ apps.app1.name }}</h3>
+    <img class="appIcon" src="{{ apps.app1.iconUrl }}" alt="App 1">
   </div>
+  <div id="app2Pane" class="appPane">
+    <h3>{{ apps.app2.name }}</h3>
+    <img class="appIcon" src="{{ apps.app2.iconUrl }}" alt="App 2">
+  </div>
+</div>
+</div>
 
-</fieldset>
-
-  {{ form.as_p }}
-
+<form id="explanationForm" action="{% url survey.views.choseApp %}" method="post">
   {% csrf_token %}
 
-  <input type="submit" value="Submit">
+  <input type="hidden" name="chosenApp" value="0">
+  <input type="hidden" name="otherApp" value="0">
+  <p id="explanationInstructions">
+    Please briefly justify why you chose <span id="chosenAppName"></span>.
+  </p>
+
+  <div class="form-group">
+    <textarea class="form-control" rows="5" name="explanation" placeholder=""></textarea>
+  </div>
+
+  <div class="form-group">
+    <input class="btn btn-default" type="submit" value="Tell me how I did">
+  </div>
 </form>
 
 {% endblock content %}

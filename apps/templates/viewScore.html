@@ -1,0 +1,30 @@
+{% extends 'structures/base.html' %}
+
+{% block head %}
+<script type="text/javascript">var switchTo5x=true;</script>
+<script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
+<script type="text/javascript">stLight.options({publisher: "817e3b70-8a68-477f-94aa-c0d3d943d9a4", doNotHash: false, doNotCopy: false, hashAddressBar: false});</script>
+{% endblock head %}
+
+{% block content  %}
+<h1>How Good Is Your Entrepreneurial Gut?</h1>
+
+<div class="panel panel-default">
+<div class="panel-body">
+<p>
+  My score for having a good eye for business success is {{ percent|floatformat:"0" }}%. Can you do better?
+</p>
+
+<p>
+Share: <br>
+<span class='st_facebook_large' displayText='Facebook'></span>
+<span class='st_twitter_large' displayText='Tweet'></span>
+<span class='st_email_large' displayText='Email'></span>
+</p>
+</div>
+</div>
+
+<a type="button" class="btn btn-default" href="{% url survey.views.index %}">Take the Test</a>
+
+{% endblock content %}
+

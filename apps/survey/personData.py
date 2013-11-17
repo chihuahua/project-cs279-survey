@@ -6,10 +6,12 @@ USAGE_CHOICES = (
     ('DAILY', 'A few times a day.'),
     ('WEEKLY', 'A few times a week.'),
     ('MONTHLY', 'A few times a month.'),
+    ('YEARLY', 'A few times a year.'),
     ('NEVER', 'Never')
 )
 
-AGE_RANGE = map(str, range(16, 100))
+AGE_INITIALS = range(15, 100, 5)
+AGE_RANGE = [str(age) + ' - ' + str(age + 4) for age in AGE_INITIALS]
 AGE_CHOICES = zip(AGE_RANGE, AGE_RANGE)
 
 COUNTRIES = (
